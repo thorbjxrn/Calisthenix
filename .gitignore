@@ -1,0 +1,16 @@
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.hmap
+*.xccheckout
+*.xcscmblueprint
+Carthage/
+Pods/
+.DS_Store
+*.swp
+*~
+.superpowers/
