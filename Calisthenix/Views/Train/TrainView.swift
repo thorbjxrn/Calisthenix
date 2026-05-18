@@ -25,6 +25,8 @@ struct TrainView: View {
         .onAppear {
             if viewModel == nil {
                 viewModel = TrainViewModel(context: modelContext)
+            } else {
+                viewModel?.refreshPlans()
             }
         }
     }
@@ -48,7 +50,19 @@ struct TrainView: View {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.activePlans, id: \.stepID) { plan in
                     if let step = viewModel.step(for: plan) {
-                        ActivePlanCard(step: step, plan: plan, viewModel: viewModel)
+                        NavigationLink {
+                            switch plan.trainingMethod {
+                            case .greaseTheGroove:
+                                GtGSessionView(plan: plan)
+                            case .structured:
+                                StructuredSessionView(plan: plan)
+                            case .skillPractice:
+                                SkillPracticeView(plan: plan)
+                            }
+                        } label: {
+                            ActivePlanCard(step: step, plan: plan, viewModel: viewModel)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }

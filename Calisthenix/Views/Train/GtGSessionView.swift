@@ -7,6 +7,7 @@ struct GtGSessionView: View {
     @Environment(ThemeManager.self) private var theme
     @State private var viewModel: GtGViewModel?
     @State private var showingQuickLog = false
+    @State private var showAdvancementPrompt = false
 
     var body: some View {
         Group {
@@ -49,6 +50,14 @@ struct GtGSessionView: View {
                                 .font(Typo.heading)
                                 .foregroundStyle(theme.completedColor)
                         }
+                        .onAppear {
+                            if let step = SkillCatalog.skill(byID: plan.skillID)?.step(byID: plan.stepID) {
+                                let engine = ProgressionEngine(context: modelContext)
+                                if engine.checkAdvancement(for: step) {
+                                    showAdvancementPrompt = true
+                                }
+                            }
+                        }
                     }
                     Spacer()
                 }
@@ -66,6 +75,19 @@ struct GtGSessionView: View {
             if viewModel == nil {
                 viewModel = GtGViewModel(plan: plan, context: modelContext)
             }
+        }
+        .sheet(isPresented: $showAdvancementPrompt) {
+            AdvancementPromptView(
+                stepName: viewModel?.stepName ?? plan.stepID,
+                skillName: SkillCatalog.skill(byID: plan.skillID)?.name ?? "",
+                onMaster: {
+                    if let skill = SkillCatalog.skill(byID: plan.skillID) {
+                        let engine = ProgressionEngine(context: modelContext)
+                        engine.master(stepID: plan.stepID, in: skill)
+                    }
+                },
+                onDismiss: {}
+            )
         }
     }
 }

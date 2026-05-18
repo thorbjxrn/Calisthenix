@@ -7,6 +7,7 @@ struct SkillPracticeView: View {
     @Environment(ThemeManager.self) private var theme
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: SkillPracticeViewModel?
+    @State private var showAdvancementPrompt = false
 
     var body: some View {
         Group {
@@ -104,6 +105,27 @@ struct SkillPracticeView: View {
                 .foregroundStyle(theme.ctaTextColor)
                 .padding(.horizontal, 16)
             Spacer()
+        }
+        .onAppear {
+            if let step = SkillCatalog.skill(byID: plan.skillID)?.step(byID: plan.stepID) {
+                let engine = ProgressionEngine(context: modelContext)
+                if engine.checkAdvancement(for: step) {
+                    showAdvancementPrompt = true
+                }
+            }
+        }
+        .sheet(isPresented: $showAdvancementPrompt) {
+            AdvancementPromptView(
+                stepName: stepName,
+                skillName: SkillCatalog.skill(byID: plan.skillID)?.name ?? "",
+                onMaster: {
+                    if let skill = SkillCatalog.skill(byID: plan.skillID) {
+                        let engine = ProgressionEngine(context: modelContext)
+                        engine.master(stepID: plan.stepID, in: skill)
+                    }
+                },
+                onDismiss: {}
+            )
         }
     }
 }
