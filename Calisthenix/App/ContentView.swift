@@ -5,13 +5,16 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
-            Text("Train")
+            TrainView()
                 .tabItem { Label("Train", systemImage: "figure.mixed.cardio") }
-            Text("Skills")
+
+            SkillsView()
                 .tabItem { Label("Skills", systemImage: "arrow.up.right.circle") }
-            Text("Progress")
+
+            CalisthenixProgressView()
                 .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis") }
-            Text("Settings")
+
+            SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
         .tint(theme.accentColor)
