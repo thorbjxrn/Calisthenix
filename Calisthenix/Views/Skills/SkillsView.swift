@@ -27,7 +27,9 @@ struct SkillsView: View {
             }
             .navigationTitle("Skills")
             .navigationDestination(for: String.self) { skillID in
-                Text("Skill Tree: \(skillID)")
+                if let skill = SkillCatalog.skill(byID: skillID) {
+                    SkillTreeView(skill: skill)
+                }
             }
         }
         .onAppear {
