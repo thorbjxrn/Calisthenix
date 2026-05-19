@@ -5,6 +5,7 @@ struct SkillsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(ThemeManager.self) private var theme
     @State private var viewModel: SkillsViewModel?
+    @State private var showingPaywall = false
 
     var body: some View {
         NavigationStack {
