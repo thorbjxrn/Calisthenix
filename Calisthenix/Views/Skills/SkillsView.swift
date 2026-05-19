@@ -14,10 +14,19 @@ struct SkillsView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(viewModel.skills) { skill in
-                                NavigationLink(value: skill.id) {
-                                    SkillCard(skill: skill, mastered: viewModel.masteredCount(for: skill))
+                                if skill.isPremium && !StoreService.shared.isPremium {
+                                    Button {
+                                        showingPaywall = true
+                                    } label: {
+                                        SkillCard(skill: skill, mastered: viewModel.masteredCount(for: skill))
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    NavigationLink(value: skill.id) {
+                                        SkillCard(skill: skill, mastered: viewModel.masteredCount(for: skill))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                         .padding(.horizontal, 16)
@@ -29,9 +38,16 @@ struct SkillsView: View {
             .navigationTitle("Skills")
             .navigationDestination(for: String.self) { skillID in
                 if let skill = SkillCatalog.skill(byID: skillID) {
-                    SkillTreeView(skill: skill)
+                    if skill.isPremium && !StoreService.shared.isPremium {
+                        PaywallView()
+                    } else {
+                        SkillTreeView(skill: skill)
+                    }
                 }
             }
+        }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView()
         }
         .onAppear {
             if viewModel == nil {

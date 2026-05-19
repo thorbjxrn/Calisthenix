@@ -48,7 +48,7 @@ struct TrainView: View {
     private func activePlansList(viewModel: TrainViewModel) -> some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(viewModel.activePlans, id: \.stepID) { plan in
+                ForEach(viewModel.activePlans, id: \.persistentModelID) { plan in
                     if let step = viewModel.step(for: plan) {
                         NavigationLink {
                             switch plan.trainingMethod {

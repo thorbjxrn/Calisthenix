@@ -122,6 +122,15 @@ struct SkillPracticeView: View {
                     if let skill = SkillCatalog.skill(byID: plan.skillID) {
                         let engine = ProgressionEngine(context: modelContext)
                         engine.master(stepID: plan.stepID, in: skill)
+
+                        let stepID = plan.stepID
+                        let descriptor = FetchDescriptor<TrainingPlan>(
+                            predicate: #Predicate<TrainingPlan> { $0.stepID == stepID && $0.isActive }
+                        )
+                        if let activePlan = try? modelContext.fetch(descriptor).first {
+                            activePlan.isActive = false
+                            try? modelContext.save()
+                        }
                     }
                 },
                 onDismiss: {}

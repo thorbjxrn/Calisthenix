@@ -7,6 +7,8 @@ struct SkillTreeView: View {
     @Environment(ThemeManager.self) private var theme
     @State private var viewModel: SkillTreeViewModel?
     @State private var selectedStep: Step?
+    @State private var stepForTrainingPlan: Step?
+    @State private var showingTrainingMethodPicker = false
 
     var body: some View {
         Group {
@@ -40,10 +42,28 @@ struct SkillTreeView: View {
                 TechniqueCardView(
                     step: step,
                     state: viewModel.state(for: step.id),
-                    onActivate: { viewModel.activate(stepID: step.id) },
+                    onActivate: {
+                        viewModel.activate(stepID: step.id)
+                        stepForTrainingPlan = step
+                        showingTrainingMethodPicker = true
+                    },
                     onMaster: { viewModel.master(stepID: step.id) },
                     onManualUnlock: { viewModel.manualUnlock(stepID: step.id) }
                 )
+            }
+        }
+        .sheet(isPresented: $showingTrainingMethodPicker) {
+            if let stepForTrainingPlan {
+                TrainingMethodPickerView(step: stepForTrainingPlan) { method, mode in
+                    let plan = TrainingPlan(
+                        stepID: stepForTrainingPlan.id,
+                        skillID: stepForTrainingPlan.skillID,
+                        method: method,
+                        mode: mode
+                    )
+                    modelContext.insert(plan)
+                    try? modelContext.save()
+                }
             }
         }
         .onAppear {

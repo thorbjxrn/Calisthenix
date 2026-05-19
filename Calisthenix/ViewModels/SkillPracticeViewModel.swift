@@ -28,6 +28,7 @@ final class SkillPracticeViewModel {
     }
 
     func completeAttempt() {
+        guard timerService.isRunning else { return }
         let holdDuration = targetHold - timerService.remainingSeconds
         timerService.stop()
 
